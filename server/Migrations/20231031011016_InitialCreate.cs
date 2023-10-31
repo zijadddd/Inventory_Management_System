@@ -45,6 +45,26 @@ namespace server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Suppliers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UniqueIdentificationNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ValueAddedTax = table.Column<double>(type: "float", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ContactPerson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Suppliers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -72,6 +92,31 @@ namespace server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "RawMaterials",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    MinQuantity = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<int>(type: "int", nullable: false),
+                    UnitOfMeasure = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    InUsage = table.Column<bool>(type: "bit", nullable: false),
+                    SupplierId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RawMaterials", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RawMaterials_Suppliers_SupplierId",
+                        column: x => x.SupplierId,
+                        principalTable: "Suppliers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Employees",
                 columns: new[] { "Id", "DateOfCancellation", "DateOfEmployment", "Email", "FirstName", "LastName", "PhoneNumber" },
@@ -89,7 +134,12 @@ namespace server.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "EmployeeId", "Password", "RoleId", "Username" },
-                values: new object[] { 1, 1, "admin", 2, "admin" });
+                values: new object[] { 1, 1, "$2a$11$SSq3rSnhQVU.ciewAUsV2uO.SHe3zpyxVdlq2ixFeqWIgyT16RaqK", 2, "admin" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RawMaterials_SupplierId",
+                table: "RawMaterials",
+                column: "SupplierId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_EmployeeId",
@@ -107,7 +157,13 @@ namespace server.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "RawMaterials");
+
+            migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Suppliers");
 
             migrationBuilder.DropTable(
                 name: "Employees");

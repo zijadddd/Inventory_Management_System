@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using server.Models.DTOs;
+using server.Models.In;
 using server.Services.Interfaces;
 
 namespace server.Controllers;
@@ -19,11 +19,17 @@ public class UserAuthController : ControllerBase
     }
 
     [HttpPost("login"), AllowAnonymous]
-    public async Task<ActionResult<string>> Login(UserAuthInfoDto request)
+    public async Task<ActionResult<string>> Login(UserAuthInfoIn request)
     {
         if (request == null) return BadRequest("User authentication info does not exist in request.");
-        var response = await _userService.AuthenticateUser(request);
-        if (response.GetType() != typeof(string)) return BadRequest(response);
-        return Ok(response);
+        try
+        {
+            var response = await _userService.AuthenticateUser(request);
+            if (response.GetType() != typeof(string)) return BadRequest(response);
+            return Ok(response);
+        } catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

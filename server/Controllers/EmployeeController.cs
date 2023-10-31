@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using server.Models.In;
 using server.Models.Out;
@@ -18,21 +17,12 @@ public class EmployeeController : ControllerBase {
         _userService = userService;
     }
 
-    [HttpPost("RegisterAnEmployee"), Authorize(Roles = "Admin")]
+    [HttpPost, Authorize(Roles = "Admin")]
     public async Task<ActionResult<EmployeeOut>> Register(EmployeeIn employeeIn) {
         try
         {
             if (ModelState.IsValid)
             {
-                DateTime minDate = new DateTime(2020, 1, 1);
-                DateTime maxDate = DateTime.Today;
-
-                if (!DateTime.TryParse(employeeIn.DateOfEmployment, out DateTime inputDate))
-                    return BadRequest("Invalid date format for date of employment.");
-
-                if (!(inputDate >= minDate && inputDate <= maxDate))
-                    return BadRequest("Invalid date format for date of employment.");
-
                 var response = await _userService.RegisterAnEmployee(employeeIn);
 
                 return response;
@@ -40,7 +30,7 @@ public class EmployeeController : ControllerBase {
             else return BadRequest(ModelState);
         } catch (Exception ex)
         {
-            return BadRequest("Something is not good.");
+            return BadRequest(ex.Message);
         }
     }
 }

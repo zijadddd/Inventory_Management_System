@@ -1,13 +1,11 @@
-﻿using Azure.Core;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using server.Database;
-using server.Models.DTOs;
+using server.Exceptions;
 using server.Models.Entities;
 using server.Models.In;
 using server.Models.Out;
 using server.Services.Interfaces;
-using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -25,56 +23,59 @@ public class UserService : IUserService {
     }
 
     public async Task<dynamic> RegisterAnEmployee(EmployeeIn employeeIn) {
-        try {
-            var roles = await _databaseContext.Roles.ToListAsync();
-            var username = $"{employeeIn.FirstName.ToLower()}_{employeeIn.LastName.ToLower()}_{employeeIn.DateOfEmployment.Substring(0, 4)}";
+        DateTime minDate = new DateTime(2020, 1, 1);
+        DateTime maxDate = DateTime.Today;
 
-            Employee employee = new Employee {
-                FirstName = employeeIn.FirstName,
-                LastName = employeeIn.LastName,
-                PhoneNumber = employeeIn.PhoneNumber,
-                Email = employeeIn.Email,
-                DateOfEmployment = DateTime.Parse(employeeIn.DateOfEmployment)
-            };
+        if (!DateTime.TryParse(employeeIn.DateOfEmployment, out DateTime inputDateOfEmployment))
+            throw new EmployeeInvalidDateException("date of employment");
 
-            await _databaseContext.AddAsync(employee);
+        if (!(inputDateOfEmployment >= minDate && inputDateOfEmployment <= maxDate))
+            throw new EmployeeInvalidDateException("date of employment");
 
-            User user = new User {
-                Username = username,
-                Password = BCrypt.Net.BCrypt.HashPassword(employeeIn.Password),
-                Role = roles.Where(r => r.Id == int.Parse(employeeIn.RoleId)).FirstOrDefault(),
-                Employee = employee
-            };
+        var roles = await _databaseContext.Roles.ToListAsync();
+        var username = $"{employeeIn.FirstName.ToLower()}_{employeeIn.LastName.ToLower()}_{employeeIn.DateOfEmployment.Substring(0, 4)}";
 
-            await _databaseContext.Users.AddAsync(user);
-            await _databaseContext.SaveChangesAsync();
+        var userExist = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username.Equals(username));
+        if (userExist != null) throw new EmployeeAlreadyExistException();
 
-            return new EmployeeOut(employee.Id.ToString(), employee.FirstName, employee.LastName, employee.PhoneNumber, employee.Email, 
-                employee.DateOfEmployment.ToString(), employee.DateOfCancellation.ToString(), user.Id.ToString(), user.Username, user.Password, user.Role.Name);
+        Employee employee = new Employee
+        {
+            FirstName = employeeIn.FirstName,
+            LastName = employeeIn.LastName,
+            PhoneNumber = employeeIn.PhoneNumber,
+            Email = employeeIn.Email,
+            DateOfEmployment = DateTime.Parse(employeeIn.DateOfEmployment)
+        };
 
-        } catch (Exception ex) {
-            return ex.Message;
-        }
+        await _databaseContext.AddAsync(employee);
 
+        User user = new User
+        {
+            Username = username,
+            Password = BCrypt.Net.BCrypt.HashPassword(employeeIn.Password),
+            Role = roles.Where(r => r.Id == int.Parse(employeeIn.RoleId)).FirstOrDefault(),
+            Employee = employee
+        };
+
+        await _databaseContext.Users.AddAsync(user);
+        await _databaseContext.SaveChangesAsync();
+
+        return new EmployeeOut(employee.Id.ToString(), employee.FirstName, employee.LastName, employee.PhoneNumber, employee.Email,
+            employee.DateOfEmployment.ToString(), employee.DateOfCancellation.ToString(), user.Id.ToString(), user.Username, user.Password, user.Role.Name);
     }
 
-    public async Task<dynamic> AuthenticateUser(UserAuthInfoDto userAuthInfoDto)
+    public async Task<string> AuthenticateUser(UserAuthInfoIn userAuthInfoDto)
     {
-        try
-        {
-            var userExist = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username.Equals(userAuthInfoDto.Username));
+        var userExist = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username.Equals(userAuthInfoDto.Username));
 
-            userExist.Role = await _databaseContext.Roles.FirstOrDefaultAsync(r => r.Id == userExist.RoleId);
-            userExist.Employee = await _databaseContext.Employees.FirstOrDefaultAsync(e => e.Id == userExist.EmployeeId);
+        if (userExist == null) throw new UserNotFoundException();
 
-            if (userExist == null) throw new Exception($"User with {userAuthInfoDto.Username} username not found.");
-            if (!BCrypt.Net.BCrypt.Verify(userAuthInfoDto.Password, userExist.Password)) throw new Exception("Incorrect password");
+        userExist.Role = await _databaseContext.Roles.FirstOrDefaultAsync(r => r.Id == userExist.RoleId);
+        userExist.Employee = await _databaseContext.Employees.FirstOrDefaultAsync(e => e.Id == userExist.EmployeeId);
 
-            return await CreateTokenAsync(userExist);
-        } catch (Exception ex)
-        {
-            return ex.Message;
-        }
+        if (!BCrypt.Net.BCrypt.Verify(userAuthInfoDto.Password, userExist.Password)) throw new IncorrectPasswordException();
+
+        return await CreateTokenAsync(userExist);
     }
 
     public async Task<string> CreateTokenAsync(User user)

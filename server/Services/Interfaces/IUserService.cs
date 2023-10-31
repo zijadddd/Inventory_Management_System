@@ -1,9 +1,7 @@
-﻿using server.Models.DTOs;
-using server.Models.In;
-using server.Models.Out;
+﻿using server.Models.In;
 
 namespace server.Services.Interfaces;
 public interface IUserService {
     Task<dynamic> RegisterAnEmployee(EmployeeIn employeeIn);
-    Task<dynamic> AuthenticateUser(UserAuthInfoDto userAuthInfoDto);
+    Task<string> AuthenticateUser(UserAuthInfoIn userAuthInfoDto);
 }

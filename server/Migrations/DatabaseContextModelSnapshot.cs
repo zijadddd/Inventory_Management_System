@@ -69,6 +69,44 @@ namespace server.Migrations
                         });
                 });
 
+            modelBuilder.Entity("server.Models.Entities.RawMaterial", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("InUsage")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MinQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UnitOfMeasure")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("RawMaterials");
+                });
+
             modelBuilder.Entity("server.Models.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -96,6 +134,48 @@ namespace server.Migrations
                             Id = 2,
                             Name = "Admin"
                         });
+                });
+
+            modelBuilder.Entity("server.Models.Entities.Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContactPerson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UniqueIdentificationNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("ValueAddedTax")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suppliers");
                 });
 
             modelBuilder.Entity("server.Models.Entities.User", b =>
@@ -134,10 +214,21 @@ namespace server.Migrations
                         {
                             Id = 1,
                             EmployeeId = 1,
-                            Password = "admin",
+                            Password = "$2a$11$SSq3rSnhQVU.ciewAUsV2uO.SHe3zpyxVdlq2ixFeqWIgyT16RaqK",
                             RoleId = 2,
                             Username = "admin"
                         });
+                });
+
+            modelBuilder.Entity("server.Models.Entities.RawMaterial", b =>
+                {
+                    b.HasOne("server.Models.Entities.Supplier", "Supplier")
+                        .WithMany("RawMaterials")
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("server.Models.Entities.User", b =>
@@ -167,6 +258,11 @@ namespace server.Migrations
             modelBuilder.Entity("server.Models.Entities.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("server.Models.Entities.Supplier", b =>
+                {
+                    b.Navigation("RawMaterials");
                 });
 #pragma warning restore 612, 618
         }
