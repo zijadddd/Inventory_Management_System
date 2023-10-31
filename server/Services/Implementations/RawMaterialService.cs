@@ -1,5 +1,4 @@
 ﻿namespace server.Services.Implementations;
 
-public class RawMaterialService
-{
+public class RawMaterialService {
 }

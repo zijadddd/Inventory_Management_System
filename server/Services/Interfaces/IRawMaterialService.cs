@@ -1,5 +1,4 @@
 ﻿namespace server.Services.Interfaces;
 
-public interface IRawMaterialService
-{
+public interface IRawMaterialService {
 }

@@ -5,6 +5,5 @@ namespace server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class RawMaterialController : ControllerBase
-{
+public class RawMaterialController : ControllerBase {
 }

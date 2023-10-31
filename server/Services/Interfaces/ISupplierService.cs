@@ -3,8 +3,7 @@ using server.Models.Out;
 
 namespace server.Services.Interfaces;
 
-public interface ISupplierService
-{
+public interface ISupplierService {
     Task<SupplierOut> CreateAnSupplier(SupplierIn supplierIn);
     Task<SupplierOut> UpdateAnSupplier(int supplierId, SupplierIn supplierIn);
     Task<List<SupplierOut>> GetAllSuppliers();

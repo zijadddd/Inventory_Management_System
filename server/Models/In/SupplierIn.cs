@@ -2,8 +2,7 @@
 
 namespace server.Models.In;
 
-public record SupplierIn
-{
+public record SupplierIn {
     [Required]
     [RegularExpression(@"^[A-Z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)*$", ErrorMessage = "Invalid name. Valid: Supplier D.O.O")]
     public string Name { get; set; } = string.Empty;

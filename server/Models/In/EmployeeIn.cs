@@ -10,7 +10,7 @@ public record EmployeeIn {
     public string LastName { get; set; } = string.Empty;
     [Required]
     [RegularExpression(@"^\(\+387\) [0-9]{2} [0-9]{3} [0-9]{3}$", ErrorMessage = "Invalid phone number. Valid: (+387) 60 128 0384")]
-    public string PhoneNumber { get; set;} = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
     [Required]
     [EmailAddress(ErrorMessage = "Invalid email address. Valid: johnsmith@gmail.com")]
     public string Email { get; set; } = string.Empty;

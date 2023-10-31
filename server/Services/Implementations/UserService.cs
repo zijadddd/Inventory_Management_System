@@ -16,8 +16,7 @@ public class UserService : IUserService {
     private readonly DatabaseContext _databaseContext;
     private readonly IConfiguration _configuration;
 
-    public UserService(DatabaseContext databaseContext, IConfiguration configuration)
-    {
+    public UserService(DatabaseContext databaseContext, IConfiguration configuration) {
         _databaseContext = databaseContext;
         _configuration = configuration;
     }
@@ -38,8 +37,7 @@ public class UserService : IUserService {
         var userExist = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username.Equals(username));
         if (userExist != null) throw new EmployeeAlreadyExistException();
 
-        Employee employee = new Employee
-        {
+        Employee employee = new Employee {
             FirstName = employeeIn.FirstName,
             LastName = employeeIn.LastName,
             PhoneNumber = employeeIn.PhoneNumber,
@@ -49,8 +47,7 @@ public class UserService : IUserService {
 
         await _databaseContext.AddAsync(employee);
 
-        User user = new User
-        {
+        User user = new User {
             Username = username,
             Password = BCrypt.Net.BCrypt.HashPassword(employeeIn.Password),
             Role = roles.Where(r => r.Id == int.Parse(employeeIn.RoleId)).FirstOrDefault(),
@@ -64,8 +61,7 @@ public class UserService : IUserService {
             employee.DateOfEmployment.ToString(), employee.DateOfCancellation.ToString(), user.Id.ToString(), user.Username, user.Password, user.Role.Name);
     }
 
-    public async Task<string> AuthenticateUser(UserAuthInfoIn userAuthInfoDto)
-    {
+    public async Task<string> AuthenticateUser(UserAuthInfoIn userAuthInfoDto) {
         var userExist = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username.Equals(userAuthInfoDto.Username));
 
         if (userExist == null) throw new UserNotFoundException();
@@ -78,8 +74,7 @@ public class UserService : IUserService {
         return await CreateTokenAsync(userExist);
     }
 
-    public async Task<string> CreateTokenAsync(User user)
-    {
+    public async Task<string> CreateTokenAsync(User user) {
         List<Claim> claims = new List<Claim> {
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Role, user.Role.Name),

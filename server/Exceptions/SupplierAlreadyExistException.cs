@@ -1,6 +1,5 @@
 ﻿namespace server.Exceptions;
 
-public class SupplierAlreadyExistException : Exception
-{
-    public SupplierAlreadyExistException() : base ("Supplier with that name already exist.") {}
+public class SupplierAlreadyExistException : Exception {
+    public SupplierAlreadyExistException() : base("Supplier with that name already exist.") { }
 }

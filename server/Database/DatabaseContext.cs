@@ -20,8 +20,8 @@ public class DatabaseContext : DbContext {
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
 
-        modelBuilder.Entity<Role>().HasData(new Role { Id = 1, Name = "Employee"}, new Role { Id = 2, Name = "Admin"});
-        modelBuilder.Entity<Employee>().HasData(new Employee { Id = 1, FirstName = "Admin", LastName = "Admin", Email = "company@provider.com", PhoneNumber = "(+387) 00 000 0000"});
+        modelBuilder.Entity<Role>().HasData(new Role { Id = 1, Name = "Employee" }, new Role { Id = 2, Name = "Admin" });
+        modelBuilder.Entity<Employee>().HasData(new Employee { Id = 1, FirstName = "Admin", LastName = "Admin", Email = "company@provider.com", PhoneNumber = "(+387) 00 000 0000" });
         modelBuilder.Entity<User>().HasData(new User { Id = 1, Username = "admin", Password = BCrypt.Net.BCrypt.HashPassword("admin"), EmployeeId = 1, RoleId = 2 });
     }
 }

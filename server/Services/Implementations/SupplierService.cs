@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Server.IIS.Core;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using server.Database;
 using server.Exceptions;
 using server.Models.Entities;
@@ -9,17 +8,14 @@ using server.Services.Interfaces;
 
 namespace server.Services.Implementations;
 
-public class SupplierService : ISupplierService
-{
+public class SupplierService : ISupplierService {
     private readonly DatabaseContext _databaseContext;
 
-    public SupplierService(DatabaseContext databaseContext)
-    {
+    public SupplierService(DatabaseContext databaseContext) {
         _databaseContext = databaseContext;
     }
 
-    public async Task<SupplierOut> CreateAnSupplier(SupplierIn supplierIn)
-    {
+    public async Task<SupplierOut> CreateAnSupplier(SupplierIn supplierIn) {
         DateTime minDate = new DateTime(2020, 1, 1);
         DateTime maxDate = DateTime.Today;
 
@@ -38,8 +34,7 @@ public class SupplierService : ISupplierService
         var supplierExist = await _databaseContext.Suppliers.FirstOrDefaultAsync(s => s.Name.Equals(supplierIn.Name));
         if (supplierExist != null) throw new SupplierAlreadyExistException();
 
-        Supplier supplier = new Supplier
-        {
+        Supplier supplier = new Supplier {
             Name = supplierIn.Name,
             UniqueIdentificationNumber = supplierIn.UniqueIdentificationNumber,
             ValueAddedTax = double.Parse(supplierIn.ValueAddedTax),
@@ -52,14 +47,13 @@ public class SupplierService : ISupplierService
 
         await _databaseContext.Suppliers.AddAsync(supplier);
         await _databaseContext.SaveChangesAsync();
-       
+
         SupplierOut supplierOut = new SupplierOut(supplier.Id.ToString(), supplier.Name, supplier.UniqueIdentificationNumber, supplier.ValueAddedTax.ToString(), supplier.PhoneNumber, supplier.ContactPerson, supplier.Email, supplier.StartDate.ToString(), supplier.EndDate.ToString());
 
         return supplierOut;
     }
 
-    public async Task<SupplierOut> DeleteAnSupplier(int supplierId)
-    {
+    public async Task<SupplierOut> DeleteAnSupplier(int supplierId) {
         var supplierExist = await _databaseContext.Suppliers.FirstOrDefaultAsync(s => s.Id == supplierId);
         if (supplierExist == null) throw new SupplierNotFoundException();
 
@@ -71,8 +65,7 @@ public class SupplierService : ISupplierService
         return supplierOut;
     }
 
-    public async Task<List<SupplierOut>> GetAllSuppliers()
-    {
+    public async Task<List<SupplierOut>> GetAllSuppliers() {
         var suppliers = await _databaseContext.Suppliers.ToListAsync();
         if (suppliers.Count == 0) throw new NotASingleSupplierWasFoundException();
 
@@ -84,8 +77,7 @@ public class SupplierService : ISupplierService
         return suppliersOut;
     }
 
-    public async Task<SupplierOut> GetAnSupplier(int supplierId)
-    {
+    public async Task<SupplierOut> GetAnSupplier(int supplierId) {
         var supplier = await _databaseContext.Suppliers.FirstOrDefaultAsync(s => s.Id == supplierId);
         if (supplier == null) throw new SupplierNotFoundException();
 
@@ -94,8 +86,7 @@ public class SupplierService : ISupplierService
         return supplierOut;
     }
 
-    public async Task<SupplierOut> UpdateAnSupplier(int supplierId, SupplierIn supplierIn)
-    {
+    public async Task<SupplierOut> UpdateAnSupplier(int supplierId, SupplierIn supplierIn) {
         DateTime minDate = new DateTime(2020, 1, 1);
         DateTime maxDate = DateTime.Today;
 

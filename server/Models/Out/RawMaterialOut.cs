@@ -1,7 +1,6 @@
 ﻿namespace server.Models.Out;
 
-public class RawMaterialOut
-{
+public class RawMaterialOut {
     public string Id { get; init; } = string.Empty;
     public string Name { get; init; } = string.Empty;
     public string Quantity { get; init; } = string.Empty;
@@ -11,8 +10,7 @@ public class RawMaterialOut
     public string InUsage { get; init; } = string.Empty;
     public string SupplierId { get; init; } = string.Empty;
 
-    public RawMaterialOut(string id, string name, string quantity, string minQuantity, string price, string unitOfMeasure, string inUsage, string supplierId)
-    {
+    public RawMaterialOut(string id, string name, string quantity, string minQuantity, string price, string unitOfMeasure, string inUsage, string supplierId) {
         Id = id;
         Name = name;
         Quantity = quantity;
