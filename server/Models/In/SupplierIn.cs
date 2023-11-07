@@ -4,7 +4,7 @@ namespace server.Models.In;
 
 public record SupplierIn {
     [Required]
-    [RegularExpression(@"^[A-Z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)*$", ErrorMessage = "Invalid name. Valid: Supplier D.O.O")]
+    [RegularExpression(@"^[A-Z][a-zA-Z0-9]*(\s*[A-Z][a-zA-Z0-9]*\.?)*$", ErrorMessage = "Invalid name. Valid: Supplier D.O.O")]
     public string Name { get; set; } = string.Empty;
     [Required]
     [RegularExpression(@"^\d{13}$", ErrorMessage = "Invalid unique identification number. Valid: 1305986712345")]

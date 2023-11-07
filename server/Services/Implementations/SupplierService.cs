@@ -35,12 +35,12 @@ public class SupplierService : ISupplierService {
         if (supplierExist != null) throw new SupplierAlreadyExistException();
 
         Supplier supplier = new Supplier {
-            Name = supplierIn.Name,
-            UniqueIdentificationNumber = supplierIn.UniqueIdentificationNumber,
+            Name = await _databaseContext.Suppliers.FirstOrDefaultAsync(s => s.Name.Equals(supplierIn.Name)) == null ? supplierIn.Name : throw new SupplierWithThatDataAlreadyExistException("name"),
+            UniqueIdentificationNumber = await _databaseContext.Suppliers.FirstOrDefaultAsync(s => s.UniqueIdentificationNumber.Equals(supplierIn.UniqueIdentificationNumber)) == null ? supplierIn.UniqueIdentificationNumber : throw new SupplierWithThatDataAlreadyExistException("unique identification number"),
             ValueAddedTax = double.Parse(supplierIn.ValueAddedTax),
-            PhoneNumber = supplierIn.PhoneNumber,
+            PhoneNumber = await _databaseContext.Suppliers.FirstOrDefaultAsync(s => s.PhoneNumber.Equals(supplierIn.PhoneNumber)) == null ? supplierIn.PhoneNumber : throw new SupplierWithThatDataAlreadyExistException("phone number"),
             ContactPerson = supplierIn.ContactPerson,
-            Email = supplierIn.Email,
+            Email = await _databaseContext.Suppliers.FirstOrDefaultAsync(s => s.Email.Equals(supplierIn.Email)) == null ? supplierIn.Email : throw new SupplierWithThatDataAlreadyExistException("email"),
             StartDate = DateTime.Parse(supplierIn.StartDate),
             EndDate = string.IsNullOrEmpty(supplierIn.EndDate) ? DateTime.MinValue : DateTime.Parse(supplierIn.EndDate)
         };
