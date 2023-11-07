@@ -1,6 +1,6 @@
 ﻿namespace server.Models.Out;
 
-public class RawMaterialOut {
+public record RawMaterialOut {
     public string Id { get; init; } = string.Empty;
     public string Name { get; init; } = string.Empty;
     public string Quantity { get; init; } = string.Empty;
