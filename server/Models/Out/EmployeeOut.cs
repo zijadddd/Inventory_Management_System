@@ -8,9 +8,9 @@ public record EmployeeOut {
     public string DateOfEmployment { get; init; } = string.Empty;
     public string DateOfCancellation { get; init; } = string.Empty;
     public string UserId { get; init; } = string.Empty;
-    public string Username { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public string Role { get; set; } = string.Empty;
+    public string Username { get; init; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
+    public string Role { get; init; } = string.Empty;
 
     public EmployeeOut(string id, string firstName, string lastName, string phoneNumber, string email, string dateOfEmployment, string dateOfCancellation, string userId, string username, string password, string role) {
         Id = id;
